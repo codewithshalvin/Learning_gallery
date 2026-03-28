@@ -8,9 +8,9 @@ import SubjectPage from "./pages/SubjectPage";
 import Subjects from "./pages/Subjects";
 import Projects from "./pages/Projects";
 import ProjectDetails from "./pages/ProjectDetails";
-import Leaderboard from "./pages/LeaderBoard";
+import Leaderboard from "./pages/Leaderboard";
 import Profile from "./pages/Profile"; // adjust path to wherever Profile.jsx lives
-import AIanalyser from "./pages/Aianalyser"; // adjust path to wherever AIanalyser.jsx lives
+import AIanalyser from "./pages/AIanalyser"; // adjust path to wherever AIanalyser.jsx lives
 
 function App() {
   return (
