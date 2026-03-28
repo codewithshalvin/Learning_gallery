@@ -41,7 +41,7 @@ function Projects() {
     if (!form.title.trim()) return alert("Enter project title");
     setAdding(true);
     try {
-      await fetch("${BASE}/projects", {
+      await fetch(`${BASE}/projects`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, ...form }),

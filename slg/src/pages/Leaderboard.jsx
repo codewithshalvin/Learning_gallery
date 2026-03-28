@@ -50,7 +50,7 @@ export default function Leaderboard() {
 
   const fetchLeaders = async () => {
     try {
-      const res = await fetch("${BASE}/leaderboard");
+      const res = await fetch(`${BASE}/leaderboard`);
       const data = await res.json();
       setLeaders(data.slice(0, 10));
     } catch (e) { console.error(e); }
@@ -80,7 +80,7 @@ export default function Leaderboard() {
   const handleCheckin = async () => {
     if (checkedToday) return;
     try {
-      const res = await fetch("${BASE}/checkin", {
+      const res = await fetch(`${BASE}/checkin`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId }),

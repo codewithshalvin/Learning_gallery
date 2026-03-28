@@ -54,7 +54,7 @@ function ProjectDetails() {
       fd.append("type",      form.type);
       if (form.type === "link" || form.type === "note") fd.append("content", form.content);
       if (["image","pdf","doc"].includes(form.type))    fd.append("file",    file);
-      await fetch("${BASE}/project-items", { method: "POST", body: fd });
+      await fetch(`${BASE}/project-items`, { method: "POST", body: fd });
       setForm({ name: "", type: "link", content: "" });
       setFile(null);
       setShowForm(false);

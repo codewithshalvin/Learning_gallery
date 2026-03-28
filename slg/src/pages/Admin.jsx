@@ -56,10 +56,10 @@ export default function Admin() {
     setLoading(true);
     try {
       const [u, s, p, lb] = await Promise.all([
-        fetch("${BASE}/admin/users").then(r => r.json()),
-        fetch("${BASE}/admin/subjects").then(r => r.json()),
-        fetch("${BASE}/admin/projects").then(r => r.json()),
-        fetch("${BASE}/leaderboard").then(r => r.json()),
+        fetch(`${BASE}/admin/users`).then(r => r.json()),
+fetch(`${BASE}/admin/subjects`).then(r => r.json()),
+fetch(`${BASE}/admin/projects`).then(r => r.json()),
+fetch(`${BASE}/leaderboard`).then(r => r.json()),
       ]);
       setUsers(Array.isArray(u) ? u : []);
       setSubjects(Array.isArray(s) ? s : []);

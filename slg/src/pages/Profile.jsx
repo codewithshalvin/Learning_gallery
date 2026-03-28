@@ -992,7 +992,7 @@ export default function Profile() {
   const doCheckin = async () => {
     setChecking(true);
     try {
-      const res  = await fetch("${BASE}/checkin", {
+      const res  = await fetch(`${BASE}/checkin`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId }),

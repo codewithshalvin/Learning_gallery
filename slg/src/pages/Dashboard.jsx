@@ -92,7 +92,7 @@ function Dashboard() {
   const addSubject = async () => {
     if (!name.trim()) return alert("Enter subject name");
     try {
-      await fetch("${BASE}/subjects", {
+      await fetch(`${BASE}/subjects`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, subjectName: name }),
