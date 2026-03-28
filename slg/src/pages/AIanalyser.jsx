@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import BASE from "../api";  // goes up one folder to src/
-const API = "${BASE}";
+const API = BASE;
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const HOURS = Array.from({ length: 14 }, (_, i) => `${i + 7}:00`);

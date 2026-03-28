@@ -55,7 +55,7 @@ function MaterialCard({ m, baseUrl }) {
 function SubjectPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const BASE_URL = "${BASE}";
+  const BASE_URL = BASE;
 
   const [materials, setMaterials] = useState([]);
   const [form, setForm] = useState({ title: "", content: "", type: "note", file: null });
