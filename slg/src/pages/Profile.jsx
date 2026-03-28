@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import BASE from "../api";  // goes up one folder to src/
 
 /* ─── helpers ─── */
 function getInitials(name = "") {
@@ -665,7 +666,7 @@ function AvatarModal({ initials, onSave, onClose }) {
         fd.append("avatar", uploadFile);
         const userId = localStorage.getItem("userId");
         try {
-          const res  = await fetch(`http://localhost:5000/user/${userId}/avatar-upload`, { method: "POST", body: fd });
+          const res  = await fetch(`${BASE}/user/${userId}/avatar-upload`, { method: "POST", body: fd });
           const data = await res.json();
           if (res.ok) onSave(data.avatarUrl, null);
           else        onSave(uploadPrev, null);
@@ -940,10 +941,10 @@ export default function Profile() {
   useEffect(() => {
     if (!userId) { navigate("/login"); return; }
     Promise.all([
-      fetch(`http://localhost:5000/user/${userId}`).then((r) => r.json()),
-      fetch(`http://localhost:5000/checkins/${userId}`).then((r) => r.json()),
-      fetch(`http://localhost:5000/subjects/${userId}`).then((r) => r.json()),
-      fetch(`http://localhost:5000/projects/${userId}`).then((r) => r.json()),
+      fetch(`${BASE}/user/${userId}`).then((r) => r.json()),
+      fetch(`${BASE}/checkins/${userId}`).then((r) => r.json()),
+      fetch(`${BASE}/subjects/${userId}`).then((r) => r.json()),
+      fetch(`${BASE}/projects/${userId}`).then((r) => r.json()),
     ]).then(([u, ci, subs, projs]) => {
       setUser(u);
       setEditName(u.name);
@@ -959,7 +960,7 @@ export default function Profile() {
     setShowModal(false);
     setUser((u) => ({ ...u, avatarUrl }));
     try {
-      await fetch(`http://localhost:5000/user/${userId}/avatar`, {
+      await fetch(`${BASE}/user/${userId}/avatar`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ avatarUrl }),
@@ -973,7 +974,7 @@ export default function Profile() {
   const saveName = async () => {
     if (!editName.trim()) return;
     try {
-      const res  = await fetch(`http://localhost:5000/user/${userId}`, {
+      const res  = await fetch(`${BASE}/user/${userId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: editName.trim() }),
@@ -991,7 +992,7 @@ export default function Profile() {
   const doCheckin = async () => {
     setChecking(true);
     try {
-      const res  = await fetch("http://localhost:5000/checkin", {
+      const res  = await fetch("${BASE}/checkin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId }),
@@ -999,8 +1000,8 @@ export default function Profile() {
       const data = await res.json();
       showToast(data.message || "✓ Checked in!");
       const [u, ci] = await Promise.all([
-        fetch(`http://localhost:5000/user/${userId}`).then((r) => r.json()),
-        fetch(`http://localhost:5000/checkins/${userId}`).then((r) => r.json()),
+        fetch(`${BASE}/user/${userId}`).then((r) => r.json()),
+        fetch(`${BASE}/checkins/${userId}`).then((r) => r.json()),
       ]);
       setUser((prev) => ({ ...prev, points: u.points }));
       setCheckins(Array.isArray(ci) ? ci : []);

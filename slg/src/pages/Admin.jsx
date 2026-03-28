@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import BASE from "../api";  // goes up one folder to src/
 
 /* ── helpers ── */
 function getInitials(name = "") {
@@ -55,10 +56,10 @@ export default function Admin() {
     setLoading(true);
     try {
       const [u, s, p, lb] = await Promise.all([
-        fetch("http://localhost:5000/admin/users").then(r => r.json()),
-        fetch("http://localhost:5000/admin/subjects").then(r => r.json()),
-        fetch("http://localhost:5000/admin/projects").then(r => r.json()),
-        fetch("http://localhost:5000/leaderboard").then(r => r.json()),
+        fetch("${BASE}/admin/users").then(r => r.json()),
+        fetch("${BASE}/admin/subjects").then(r => r.json()),
+        fetch("${BASE}/admin/projects").then(r => r.json()),
+        fetch("${BASE}/leaderboard").then(r => r.json()),
       ]);
       setUsers(Array.isArray(u) ? u : []);
       setSubjects(Array.isArray(s) ? s : []);
@@ -79,7 +80,7 @@ export default function Admin() {
   /* ── user CRUD ── */
   const saveUser = async () => {
     try {
-      const res  = await fetch(`http://localhost:5000/admin/users/${editUser._id}`, {
+      const res  = await fetch(`${BASE}/admin/users/${editUser._id}`, {
         method: "PUT", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: editUser.name, role: editUser.role, points: Number(editUser.points) }),
       });
@@ -90,7 +91,7 @@ export default function Admin() {
 
   const confirmDeleteUser = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/admin/users/${deleteUser._id}`, { method: "DELETE" });
+      const res = await fetch(`${BASE}/admin/users/${deleteUser._id}`, { method: "DELETE" });
       if (res.ok) { showToast("✓ User deleted"); setDeleteUser(null); fetchAll(); }
       else showToast("Failed to delete", true);
     } catch { showToast("Network error", true); }
@@ -99,7 +100,7 @@ export default function Admin() {
   /* ── subject CRUD ── */
   const saveSubject = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/admin/subjects/${editSubject._id}`, {
+      const res = await fetch(`${BASE}/admin/subjects/${editSubject._id}`, {
         method: "PUT", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ subjectName: editSubject.subjectName }),
       });
@@ -110,7 +111,7 @@ export default function Admin() {
 
   const confirmDelSubject = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/admin/subjects/${delSubject._id}`, { method: "DELETE" });
+      const res = await fetch(`${BASE}/admin/subjects/${delSubject._id}`, { method: "DELETE" });
       if (res.ok) { showToast("✓ Subject deleted"); setDelSubject(null); fetchAll(); }
       else showToast("Failed", true);
     } catch { showToast("Network error", true); }
@@ -119,7 +120,7 @@ export default function Admin() {
   /* ── project CRUD ── */
   const saveProject = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/admin/projects/${editProject._id}`, {
+      const res = await fetch(`${BASE}/admin/projects/${editProject._id}`, {
         method: "PUT", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title: editProject.title, description: editProject.description }),
       });
@@ -130,7 +131,7 @@ export default function Admin() {
 
   const confirmDelProject = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/admin/projects/${delProject._id}`, { method: "DELETE" });
+      const res = await fetch(`${BASE}/admin/projects/${delProject._id}`, { method: "DELETE" });
       if (res.ok) { showToast("✓ Project deleted"); setDelProject(null); fetchAll(); }
       else showToast("Failed", true);
     } catch { showToast("Network error", true); }

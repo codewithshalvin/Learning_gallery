@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import BASE from "../api";  // goes up one folder to src/
 
 const PROJECT_COLORS = [
   { bg: "#1a2a4a", accent: "#5980f5" },
@@ -26,7 +27,7 @@ function Projects() {
   const fetchProjects = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:5000/projects/${userId}`);
+      const res = await fetch(`${BASE}/projects/${userId}`);
       const data = await res.json();
       setProjects(data);
     } catch (err) {
@@ -40,7 +41,7 @@ function Projects() {
     if (!form.title.trim()) return alert("Enter project title");
     setAdding(true);
     try {
-      await fetch("http://localhost:5000/projects", {
+      await fetch("${BASE}/projects", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, ...form }),

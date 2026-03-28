@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import BASE from "../api";  // goes up one folder to src/
 
 // ── helpers ────────────────────────────────────────────────
 function generateDays(checkins = []) {
@@ -49,7 +50,7 @@ export default function Leaderboard() {
 
   const fetchLeaders = async () => {
     try {
-      const res = await fetch("http://localhost:5000/leaderboard");
+      const res = await fetch("${BASE}/leaderboard");
       const data = await res.json();
       setLeaders(data.slice(0, 10));
     } catch (e) { console.error(e); }
@@ -57,7 +58,7 @@ export default function Leaderboard() {
 
   const fetchCheckins = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/checkins/${userId}`);
+      const res = await fetch(`${BASE}/checkins/${userId}`);
       const data = await res.json();
       setCheckins(data);
       const today = new Date().toISOString().split("T")[0];
@@ -67,7 +68,7 @@ export default function Leaderboard() {
 
   const fetchMyPoints = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/user/${userId}`);
+      const res = await fetch(`${BASE}/user/${userId}`);
       const data = await res.json();
       setMyPoints(data.points ?? 0);
       setMyName(data.name ?? localStorage.getItem("username") ?? "You");
@@ -79,7 +80,7 @@ export default function Leaderboard() {
   const handleCheckin = async () => {
     if (checkedToday) return;
     try {
-      const res = await fetch("http://localhost:5000/checkin", {
+      const res = await fetch("${BASE}/checkin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId }),

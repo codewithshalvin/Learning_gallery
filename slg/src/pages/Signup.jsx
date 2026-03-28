@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import BASE from "../api";  // goes up one folder to src/
 
 function Signup() {
   const [form, setForm] = useState({ name: "", email: "", password: "", role: "user" });
@@ -14,7 +15,7 @@ function Signup() {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/signup", {
+      const res = await fetch("${BASE}/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),

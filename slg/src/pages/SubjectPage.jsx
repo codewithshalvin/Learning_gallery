@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import BASE from "../api";  // goes up one folder to src/
 
 const TYPE_CONFIG = {
   note:  { icon: "📝", color: "#1a7a6e", accent: "#20d9b8", label: "Note" },
@@ -54,7 +55,7 @@ function MaterialCard({ m, baseUrl }) {
 function SubjectPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const BASE_URL = "http://localhost:5000";
+  const BASE_URL = "${BASE}";
 
   const [materials, setMaterials] = useState([]);
   const [form, setForm] = useState({ title: "", content: "", type: "note", file: null });

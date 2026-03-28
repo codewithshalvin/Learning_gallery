@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import BASE from "../api";  // goes up one folder to src/
 const SUBJECT_COLORS = [
   { bg: "#1a7a6e", accent: "#20d9b8" },
   { bg: "#1a5c7a", accent: "#20b8d9" },
@@ -60,7 +60,7 @@ function Dashboard() {
   /* fetch user — picks up latest avatar even after profile page changes it */
   const fetchUser = async () => {
     try {
-      const res  = await fetch(`http://localhost:5000/user/${userId}`);
+      const res  = await fetch(`${BASE}/user/${userId}`);
       const data = await res.json();
       setUsername(data.name || localStorage.getItem("username") || "User");
       setAvatarUrl(data.avatarUrl || "");
@@ -74,7 +74,7 @@ function Dashboard() {
   const fetchSubjects = async () => {
     setLoading(true);
     try {
-      const res  = await fetch(`http://localhost:5000/subjects/${userId}`);
+      const res  = await fetch(`${BASE}/subjects/${userId}`);
       const data = await res.json();
       setSubjects(data);
     } catch (err) { console.log(err); }
@@ -83,7 +83,7 @@ function Dashboard() {
 
   const fetchProjects = async () => {
     try {
-      const res  = await fetch(`http://localhost:5000/projects/${userId}`);
+      const res  = await fetch(`${BASE}/projects/${userId}`);
       const data = await res.json();
       setProjects(data);
     } catch (err) { console.log(err); }
@@ -92,7 +92,7 @@ function Dashboard() {
   const addSubject = async () => {
     if (!name.trim()) return alert("Enter subject name");
     try {
-      await fetch("http://localhost:5000/subjects", {
+      await fetch("${BASE}/subjects", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, subjectName: name }),

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import BASE from "../api";  // goes up one folder to src/
 
 const TYPE_META = {
   link:  { icon: "🔗", label: "Link",  color: "#5980f5", bg: "#1a2a4a" },
@@ -27,7 +28,7 @@ function ProjectDetails() {
   const fetchItems = async () => {
     setLoading(true);
     try {
-      const res  = await fetch(`http://localhost:5000/project-items/${id}`);
+      const res  = await fetch(`${BASE}/project-items/${id}`);
       const data = await res.json();
       setItems(data);
     } catch (err) { console.log(err); }
@@ -36,7 +37,7 @@ function ProjectDetails() {
 
   const fetchProject = async () => {
     try {
-      const res  = await fetch(`http://localhost:5000/project/${id}`);
+      const res  = await fetch(`${BASE}/project/${id}`);
       const data = await res.json();
       setProjectName(data.title);
     } catch (err) { console.log(err); }
@@ -53,7 +54,7 @@ function ProjectDetails() {
       fd.append("type",      form.type);
       if (form.type === "link" || form.type === "note") fd.append("content", form.content);
       if (["image","pdf","doc"].includes(form.type))    fd.append("file",    file);
-      await fetch("http://localhost:5000/project-items", { method: "POST", body: fd });
+      await fetch("${BASE}/project-items", { method: "POST", body: fd });
       setForm({ name: "", type: "link", content: "" });
       setFile(null);
       setShowForm(false);
@@ -65,7 +66,7 @@ function ProjectDetails() {
   const handleDelete = async (itemId) => {
     setDeleteId(itemId);
     try {
-      await fetch(`http://localhost:5000/project-items/${itemId}`, { method: "DELETE" });
+      await fetch(`${BASE}/project-items/${itemId}`, { method: "DELETE" });
       fetchItems();
     } catch (err) { console.log(err); }
     finally { setDeleteId(null); }
@@ -325,19 +326,19 @@ function ProjectDetails() {
                     )}
                     {item.type === "image" && (
                       <img
-                        src={`http://localhost:5000/${item.file}`}
+                        src={`${BASE}/${item.file}`}
                         alt={item.name}
                         style={S.previewImg}
                       />
                     )}
                     {item.type === "pdf" && (
-                      <a href={`http://localhost:5000/${item.file}`} target="_blank" rel="noreferrer"
+                      <a href={`${BASE}/${item.file}`} target="_blank" rel="noreferrer"
                         style={{ ...S.actionLink, color: meta.color }}>
                         📄 View PDF →
                       </a>
                     )}
                     {item.type === "doc" && (
-                      <a href={`http://localhost:5000/${item.file}`} target="_blank" rel="noreferrer"
+                      <a href={`${BASE}/${item.file}`} target="_blank" rel="noreferrer"
                         style={{ ...S.actionLink, color: meta.color }}>
                         📝 Download File →
                       </a>

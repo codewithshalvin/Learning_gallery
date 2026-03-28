@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import BASE from "../api";  // goes up one folder to src/
 
 const SUBJECT_COLORS = [
   { bg: "#1a7a6e", accent: "#20d9b8" },
@@ -22,7 +23,7 @@ function Subjects() {
   const fetchSubjects = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:5000/subjects/${userId}`);
+      const res = await fetch(`${BASE}/subjects/${userId}`);
       const data = await res.json();
       setSubjects(data);
     } catch (err) {

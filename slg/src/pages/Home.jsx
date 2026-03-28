@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-
+import BASE from "../api";  // goes up one folder to src/
 const styles = `
   @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;700;800&display=swap');
 
