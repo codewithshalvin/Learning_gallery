@@ -143,7 +143,7 @@ app.put("/user/:userId/avatar", async (req, res) => {
 app.post("/user/:userId/avatar-upload", upload.single("avatar"), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: "No file uploaded" });
-    const avatarUrl = "${BASE}/uploads/" + req.file.filename;
+    const avatarUrl = `${process.env.BACKEND_URL || "http://localhost:5000"}/uploads/${req.file.filename}`;
     const user = await User.findByIdAndUpdate(req.params.userId, { avatarUrl }, { new: true }).select("name avatarUrl");
     if (!user) return res.status(404).json({ error: "User not found" });
     res.json({ avatarUrl: user.avatarUrl });
