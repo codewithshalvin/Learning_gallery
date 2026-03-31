@@ -16,7 +16,7 @@ const TimetableSlot   = require("./models/TimetableSlot");
 const ScheduleSession = require("./models/ScheduleSession");
 const Checklist       = require("./models/Checklist");
 const ChecklistItem   = require("./models/ChecklistItem");
-
+const { initReminders } = require("./reminderService");
 
 const app = express();
 
@@ -40,6 +40,7 @@ mongoose.connect(process.env.MONGO_URI)
     if (result.modifiedCount > 0) {
       console.log("Migration: " + result.modifiedCount + " users patched");
     }
+    initReminders(); // ← Email reminder cron jobs started after DB connects
   })
   .catch(err => console.log(err));
 
@@ -595,6 +596,7 @@ app.post("/api/analyse", (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
 app.get("/timetable/:userId", async (req, res) => {
   const slots = await TimetableSlot.find({ userId: req.params.userId });
   res.json(slots);
@@ -615,6 +617,7 @@ app.delete("/timetable/:id", async (req, res) => {
   await TimetableSlot.findByIdAndDelete(req.params.id);
   res.json({ message: "Deleted" });
 });
+
 app.get("/schedule/:userId", async (req, res) => {
   const data = await ScheduleSession.find({ userId: req.params.userId });
   res.json(data);
@@ -635,16 +638,15 @@ app.delete("/schedule/:id", async (req, res) => {
   await ScheduleSession.findByIdAndDelete(req.params.id);
   res.json({ message: "Deleted" });
 });
+
 app.get("/checklists/:userId", async (req, res) => {
   const lists = await Checklist.find({ userId: req.params.userId });
-
   const result = await Promise.all(
     lists.map(async (list) => {
       const items = await ChecklistItem.find({ listId: list._id });
       return { ...list.toObject(), items };
     })
   );
-
   res.json(result);
 });
 
@@ -659,6 +661,7 @@ app.delete("/checklists/:id", async (req, res) => {
   await ChecklistItem.deleteMany({ listId: req.params.id });
   res.json({ message: "Deleted" });
 });
+
 app.post("/checklist-items", async (req, res) => {
   const item = new ChecklistItem(req.body);
   await item.save();
@@ -674,6 +677,7 @@ app.delete("/checklist-items/:id", async (req, res) => {
   await ChecklistItem.findByIdAndDelete(req.params.id);
   res.json({ message: "Deleted" });
 });
+
 app.listen(5000, () => {
   console.log("Server running on port 5000");
 });
