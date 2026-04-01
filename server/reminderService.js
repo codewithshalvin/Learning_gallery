@@ -12,10 +12,15 @@ const ChecklistItem   = require("./models/ChecklistItem");
 
 // ── Mailer setup ─────────────────────────────────────────────────────────────
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,           // false = port 587 (TLS), true = port 465 (SSL)
   auth: {
     user: process.env.EMAIL_USER,   // your Gmail address
     pass: process.env.EMAIL_PASS,   // Gmail App Password (NOT your login password)
+  },
+  tls: {
+    rejectUnauthorized: false,      // allows connection on Render free tier
   },
 });
 
@@ -226,9 +231,9 @@ async function sendRemindersForOffset(daysAway) {
       if (!user || !user.email) continue;
 
       const html = buildEmail({
-        userName:      user.name || "Student",
+        userName:       user.name || "Student",
         daysAway,
-        sessions:      userSessionMap[uid]   || [],
+        sessions:       userSessionMap[uid]   || [],
         checklistItems: userChecklistMap[uid] || [],
       });
 
@@ -246,17 +251,17 @@ async function sendRemindersForOffset(daysAway) {
   }
 }
 
-// ── Cron jobs  ───────────────────────────────────────────────────────────────
-//   Runs every day at 08:00 AM server time
-//   Adjust the timezone string to match your server locale if needed
+// ── Cron jobs ────────────────────────────────────────────────────────────────
+//   Runs every day at 08:00 AM IST
+//   Change timezone if your users are in a different region
 
 function initReminders() {
-  // 1-day-before reminder  →  fires daily at 08:00
+  // 1-day-before reminder  →  fires daily at 08:00 IST
   cron.schedule("0 8 * * *", () => sendRemindersForOffset(1), {
-    timezone: "Asia/Kolkata",   // ← change to your timezone
+    timezone: "Asia/Kolkata",
   });
 
-  // 3-day-before reminder  →  fires daily at 08:00
+  // 3-day-before reminder  →  fires daily at 08:00 IST
   cron.schedule("0 8 * * *", () => sendRemindersForOffset(3), {
     timezone: "Asia/Kolkata",
   });
