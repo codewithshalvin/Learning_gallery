@@ -677,7 +677,15 @@ app.delete("/checklist-items/:id", async (req, res) => {
   await ChecklistItem.findByIdAndDelete(req.params.id);
   res.json({ message: "Deleted" });
 });
-
+app.get("/test-reminder", async (req, res) => {
+  try {
+    const { sendRemindersForOffset } = require("./reminderService");
+    await sendRemindersForOffset(1);
+    res.json({ message: "Test sent! Check your email." });
+  } catch(err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 app.listen(5000, () => {
   console.log("Server running on port 5000");
 });
