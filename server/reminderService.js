@@ -264,4 +264,4 @@ function initReminders() {
   console.log("[Reminder] Cron jobs initialised (08:00 IST daily for 1-day & 3-day notices)");
 }
 
-module.exports = { initReminders };
+module.exports = { initReminders, sendRemindersForOffset };
