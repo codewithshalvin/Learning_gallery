@@ -18,6 +18,28 @@ const Checklist       = require("./models/Checklist");
 const ChecklistItem   = require("./models/ChecklistItem");
 const { initReminders } = require("./reminderService");
 
+// ── Cloudinary setup ──────────────────────────────────────────────────────────
+const cloudinary = require("cloudinary").v2;
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key:    process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+const cloudinaryStorage = new CloudinaryStorage({
+  cloudinary,
+  params: async (req, file) => {
+    const isImage = file.mimetype.startsWith("image/");
+    return {
+      folder: "smartlearning",
+      resource_type: isImage ? "image" : "raw",
+      public_id: Date.now() + "_" + file.originalname.replace(/[^a-zA-Z0-9.]/g, "_"),
+    };
+  },
+});
+
 const app = express();
 
 app.use(cors({
@@ -44,16 +66,23 @@ mongoose.connect(process.env.MONGO_URI)
   })
   .catch(err => console.log(err));
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => { cb(null, "uploads/"); },
-  filename:    (req, file, cb) => { cb(null, Date.now() + path.extname(file.originalname)); }
-});
-const upload = multer({ storage });
+// ── Multer using Cloudinary storage ──────────────────────────────────────────
+const upload = multer({ storage: cloudinaryStorage });
 
 app.get("/", (req, res) => res.send("API is running..."));
 
 app.get("/test-key", (req, res) => {
   res.json({ mongo: process.env.MONGO_URI ? "MONGO_URI loaded" : "MONGO_URI missing" });
+});
+
+app.get("/test-reminder", async (req, res) => {
+  try {
+    const { sendRemindersForOffset } = require("./reminderService");
+    await sendRemindersForOffset(1);
+    res.json({ message: "Test sent! Check your email." });
+  } catch(err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 app.post("/upload-folder", upload.array("files"), async (req, res) => {
@@ -65,7 +94,7 @@ app.post("/upload-folder", upload.array("files"), async (req, res) => {
       projectId,
       name: file.originalname,
       type: file.mimetype.startsWith("image") ? "image" : file.mimetype.includes("pdf") ? "pdf" : "doc",
-      file: file.path,
+      file: file.path,           // Cloudinary URL
       parentFolder: null,
       folderPath: Array.isArray(paths) ? paths[index] : paths
     }));
@@ -144,7 +173,7 @@ app.put("/user/:userId/avatar", async (req, res) => {
 app.post("/user/:userId/avatar-upload", upload.single("avatar"), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: "No file uploaded" });
-    const avatarUrl = `${process.env.BACKEND_URL || "http://localhost:5000"}/uploads/${req.file.filename}`;
+    const avatarUrl = req.file.path;   // Cloudinary URL
     const user = await User.findByIdAndUpdate(req.params.userId, { avatarUrl }, { new: true }).select("name avatarUrl");
     if (!user) return res.status(404).json({ error: "User not found" });
     res.json({ avatarUrl: user.avatarUrl });
@@ -178,7 +207,7 @@ app.post("/materials", upload.single("file"), async (req, res) => {
     const { subjectId, type, title } = req.body;
     let content = "";
     if (type === "note" || type === "link") { content = req.body.content; }
-    else { content = req.file.path; }
+    else { content = req.file.path; }   // Cloudinary URL
     const newMaterial = new Material({ subjectId, type, title, content });
     await newMaterial.save();
     res.json({ message: "Material added" });
@@ -228,7 +257,7 @@ app.post("/project-items", upload.single("file"), async (req, res) => {
     const newItem = new ProjectItem({
       projectId, name, type,
       content: type === "link" || type === "note" ? content : "",
-      file: req.file ? req.file.path : ""
+      file: req.file ? req.file.path : ""   // Cloudinary URL
     });
     await newItem.save();
     res.json(newItem);
@@ -677,15 +706,7 @@ app.delete("/checklist-items/:id", async (req, res) => {
   await ChecklistItem.findByIdAndDelete(req.params.id);
   res.json({ message: "Deleted" });
 });
-app.get("/test-reminder", async (req, res) => {
-  try {
-    const { sendRemindersForOffset } = require("./reminderService");
-    await sendRemindersForOffset(1);
-    res.json({ message: "Test sent! Check your email." });
-  } catch(err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+
 app.listen(5000, () => {
   console.log("Server running on port 5000");
 });
